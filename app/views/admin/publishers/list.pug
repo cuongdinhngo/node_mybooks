@@ -1,0 +1,31 @@
+extends ../layouts/layout.pug
+
+block content
+    div(class="col-sm-12 row")
+        div(class="col-sm-9")
+        div(class="col-sm-3")
+            ul(class="nav nav-pills")
+                li(class="nav-item")
+                    a(class="nav-link active" href="/api/publishers/add") Add new
+    div(class="col-sm-12 row")
+        table(class="table table-hover")
+            thead
+                tr
+                    th(scope="col") Name
+                    th(scope="col") Icon
+                    th(scope="col") Overseas
+                    th(scope="col") Categories
+                    th(scope="col") Action
+            tbody
+                each publisher in publishers
+                    tr
+                        td= publisher.name
+                        td
+                            img(src=publisher.iconPath, alt=publisher.name)
+                        td= publisher.is_overseas
+                        td= publisher.categories.join(', ')
+                        td 
+                            a.d-inline(href=`/api/publishers/edit/${publisher._id}`) Edit
+                            form.d-inline(action=`/api/publishers/${publisher._id}` method="post")
+                                input(type='hidden', value='DELETE', name='_method')
+                                button(type="submit" class="btn btn-link") Delete

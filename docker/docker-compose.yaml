@@ -1,0 +1,39 @@
+version: '3'
+services:
+  node_dummy:
+    build: ./node_server
+    volumes:
+      - ../app:/usr/src/app
+    ports:
+      - "127.0.0.1:9050:8080"
+    environment:
+      PORT: 8080
+      NODE_ENV: development
+    tty: true
+  #MYSQL
+  node_mysql:
+    build: ./mysql
+    tty: true
+    ports:
+      - "43306:3306"
+    environment:
+      MYSQL_DATABASE: app
+      #MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root@secret123
+  #MONGO
+  mongo:
+    image: mongo
+    # restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: abcd1234
+  #MONGO-EXPRESS
+  mongo-express:
+    image: mongo-express
+    # restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: abcd1234
