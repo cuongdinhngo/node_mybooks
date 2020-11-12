@@ -9,10 +9,12 @@ const fs = require('fs');
 const config = require('config');
 const { reject } = require('lodash');
 const { resolve } = require('path');
+const {logger} = require('../libs/Logger.js');
 
 const categories = helpers.loadJsonData('books.categories');
 
 exports.list_publishers = async (req, res, next) => {
+    logger.info(req.originalUrl);
     let templatePath = "views/admin/publishers/list.pug";
     let publishers = await Publisher.find({deleted_at: {$exists: false}})
     res.send(pug.renderFile(templatePath, {publishers}));
