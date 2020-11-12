@@ -1,12 +1,13 @@
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
-const logger = require('../middlewares/logger.js');
 const moment = require('moment-timezone');
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
+const {accessLogger} = require('../libs/Logger.js');
 
 module.exports = function(app){
+
     //Express middlewares
     app.use(express.static('public'));
     app.use(express.urlencoded({extended: true}));
@@ -28,7 +29,7 @@ module.exports = function(app){
         return moment().tz(tz).format();
     });
     morgan.format('myformat', ':remote-addr - :remote-user [:date[Asia/Ho_Chi_Minh]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"');
-    app.use(morgan('myformat', { stream: logger.stream }));
+    app.use(morgan('myformat', { stream: accessLogger.stream }));
     
     //Setup view
     app.set('views', path.join(__dirname, 'views'));
