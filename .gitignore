@@ -1,1 +1,3 @@
-samples\
+samples/
+add/node_modules/
+add/package-lock.json
