@@ -1,14 +1,8 @@
-const { FSx } = require('aws-sdk');
-const e = require('express');
-const express = require('express');
-const router = express.Router();
 const pug = require('pug');
 const helpers = require('../libs/Helpers');
-const Publisher = require('../models/Publisher');
+const {Publisher, beautyErrors} = require('../models/Publisher');
 const fs = require('fs');
 const config = require('config');
-const { reject } = require('lodash');
-const { resolve } = require('path');
 const {logger} = require('../libs/Logger.js');
 
 const categories = helpers.loadJsonData('books.categories');
@@ -30,18 +24,10 @@ exports.get_form_edit_publisher = async (req, res, next) => {
     try {
         let templatePath = "views/admin/publishers/edit.pug";
         Publisher.findById(req.params._id).exec((err, publisher) => {
-            let errMsg = undefined;
             if (err) {
-                if (err.kind == "ObjectId" && err.path == "_id") {
-                    errMsg = `This publisher is not existed`;
-                    console.log(`[ERROR] === ${errMsg}`);
-                }
-                res.redirect('/api/publishers');
+                publisher = {_id: req.params._id};
             }
-            if (publisher) {
-                const compiledFunction = pug.compileFile(templatePath);
-                res.send(compiledFunction({categories, publisher}));
-            }
+            processPublisher(undefined, templatePath, err, publisher, req, res)
         });
     } catch (e) {
         res.send(e);
@@ -54,60 +40,27 @@ exports.add_publisher = async (req, res, next) => {
             req.body.icon = req.body.images.map(image => "" + image + "").join("");
         }
         let templatePath = "views/admin/publishers/add.pug";
-        Publisher.create(req.body, (err, data) => {
-            let errMsg = undefined;
-            if (err) {
-                console.log(err);
-                if (req.body.icon) {
-                    fs.unlinkSync(config.get("upload_images.publishers.dest") + req.body.icon);
-                }
-                if (err.errors && err.errors["name"] && err.errors["name"].message) {
-                    errMsg = err.errors["name"].message;
-                }
-                if (err.name == "MongoError" && err.code == 11000) {
-                    errMsg = "This name is already used!"
-                }
-                res.send(pug.renderFile(templatePath, {categories , err: errMsg}));
-            }
-            if (data) {
-                res.send(pug.renderFile(templatePath, {categories , msg: "Inserted Successfully!"}));
-            } 
+        Publisher.create(req.body, (err, publisher) => {
+            processPublisher('Inserted Successfully!', templatePath, err, publisher, req, res);
         });
     } catch (e) {
-        console.log('===============');
         res.send(e);
     }
 }
 
 exports.edit_publisher = async (req, res, next) => {
     try {
-        let publisher = await Publisher.findByIdAndUpdate(req.params._id, req.body, {new: true});
         if (req.body.images.length > 0) {
             req.body.icon = req.body.images.map(image => "" + image + "").join("");
         }
         let templatePath = "views/admin/publishers/edit.pug";
         Publisher.findByIdAndUpdate(req.params._id, req.body, {new: true}).exec((err, publisher) => {
-            let errMsg = undefined;
             if (err) {
-                console.log(err);
-                if (req.body.icon) {
-                    fs.unlinkSync(config.get("upload_images.publishers.dest") + req.body.icon);
-                }
-                if (err.errors && err.errors["name"] && err.errors["name"].message) {
-                    errMsg = err.errors["name"].message;
-                }
-                if (err.name == "MongoError" && err.code == 11000) {
-                    errMsg = "This name is already used!"
-                }
-                res.send(pug.renderFile(templatePath, {categories , err: errMsg}));
+                publisher = req.body;
             }
-            if (publisher) {
-                console.log(publisher);
-                res.send(pug.renderFile(templatePath, {categories , publisher, msg: "Updated Successfully!"}));
-            } 
+            processPublisher('Updated Successfully!', templatePath, err, publisher, req, res);
         });
     } catch (e) {
-        console.log('*********************');
         res.send(e);
     }
 }
@@ -120,5 +73,20 @@ exports.delete_publisher = async (req, res, next) => {
         });
     } catch (e) {
         res.send(e);
+    }
+}
+
+function processPublisher(resMsg, templatePath, err, publisher, req, res){
+    let errMsg = undefined;
+    if (err) {
+        if (req.body.icon) {
+            fs.unlinkSync(config.get("upload_images.publishers.dest") + req.body.icon);
+        }
+        errMsg = beautyErrors(err);
+        res.send(pug.renderFile(templatePath, {categories, publisher, err: errMsg}));
+        return;
+    }
+    if (publisher) {
+        res.send(pug.renderFile(templatePath, {categories , publisher, msg: resMsg}));
     }
 }
