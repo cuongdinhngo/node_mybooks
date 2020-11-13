@@ -6,6 +6,5 @@ function activeNavItem() {
     currentUri = currentUri.charAt(0).toUpperCase() + currentUri.slice(1);
     $('#nav'+currentUri).addClass("active");
 }
-
 activeNavItem();
 </script>
