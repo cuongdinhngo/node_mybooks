@@ -7,8 +7,8 @@
     "upload_images": {
         "types": ["publishers"],
         "publishers": {
-            "dest": "public/images/publishers/",
-            "path": "/images/publishers/",
+            "dest": "public/images/mybooks/publishers/",
+            "path": "/images/mybooks/publishers/",
             "fields": [
                 {"name": "icon", "maxCount": 1}
             ],

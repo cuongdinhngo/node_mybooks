@@ -11,7 +11,6 @@ block content
                 label(for="overseas" class="col-sm-2 col-form-label") Overseas:
                 div(class="col-sm-10 row")
                     - var overseas = ["Yes", "No"]
-                    - console.log(publisher.is_overseas)
                     each item in overseas
                         - var value = item == "Yes" ? 1 : 0
                         div(class="col-sm-2")

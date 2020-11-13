@@ -1,7 +1,6 @@
-const {Publisher, beautyErrors} = require('../../models/Publisher');
+const {Publisher} = require('../../models/Publisher');
 const pug = require('pug');
 const helpers = require('../../libs/Helpers');
-
 const categories = helpers.loadJsonData('books.categories');
 
 exports.validate = async (req, res, next) => {
