@@ -43,4 +43,5 @@ block content
                     if msg !== undefined
                         div(class="alert alert-primary" role="alert") #{msg}
                     if err !== undefined
-                        div(class="alert alert-danger" role="alert") #{err}  
+                        each key in err
+                            div(class="alert alert-danger" role="alert") #{key.message}

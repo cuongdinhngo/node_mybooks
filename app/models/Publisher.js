@@ -6,7 +6,7 @@ const publisherSchema = new mongoose.Schema({
     name: {
         type: String, 
         required: [true, 'Publisher name is required!'], 
-        unique: [true, "This name is already used!"]
+        unique: true
     },
     is_overseas: {
         type: Boolean,
@@ -16,15 +16,33 @@ const publisherSchema = new mongoose.Schema({
     },
     icon: {type: String},
     categories: {
-        type: Array,
+        type: [String],
         set: v => {
             return v.map(item => item.replace(/\s/gi, '_'));
         },
         get: v => {
             return v.map(item => item.replace(/_/gi, ' '));
+        },
+        validate: {
+            validator: function(v) {
+                return v.length > 1;
+            },
+            message: function() {
+                return 'Categories have at least one choice!';
+            }
         }
     },
-    description: {type: String},
+    description: {
+        type: String,
+        validate: {
+            validator: function(v) {
+                return v.length > 1;
+            },
+            message: function() {
+                return 'Description has more detail!';
+            }
+        }
+    },
     created_at: {
         type: Date,
         default: Date.now
@@ -42,4 +60,15 @@ publisherSchema.virtual('iconPath').get(function(){
 
 const Publisher = mongoose.model('Publisher', publisherSchema);
 
-module.exports = Publisher;
+exports.beautyErrors = (error) => {
+    let errMsg = {};
+    if (error.code == 11000) {
+        errMsg["name"] = {message: `${error.keyValue.name} is already existed!`};
+    }
+    if (error.kind == "ObjectId" && error.path == "_id") {
+        errMsg["_id"] = {message: "This publisher is not existed"};
+    }
+    return errMsg;
+}
+
+exports.Publisher = Publisher;
