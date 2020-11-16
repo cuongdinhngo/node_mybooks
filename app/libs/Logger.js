@@ -21,6 +21,18 @@ loggerContainer.add('accessLogger', {
   ]
 });
 
+loggerContainer.add('dbLogger', {
+  format: combine(
+    label({ label:  String(process.env.NODE_ENV).toUpperCase()}),
+    timestamp(),
+    appLoggerFormat
+  ),
+  transports: [
+    // new winston.transports.Console(),
+    new winston.transports.File({ filename: './logs/db.log' })
+  ]
+});
+
 loggerContainer.add('logger', {
     //Customize format of log
     format: combine(
@@ -37,6 +49,7 @@ loggerContainer.add('logger', {
 
 const accessLogger = loggerContainer.get('accessLogger');
 const logger = loggerContainer.get('logger');
+const dbLogger = loggerContainer.get('dbLogger');
 
 accessLogger.stream = {
     write(message){
@@ -47,3 +60,4 @@ accessLogger.stream = {
 
 exports.accessLogger = accessLogger
 exports.logger = logger
+exports.dbLogger = dbLogger

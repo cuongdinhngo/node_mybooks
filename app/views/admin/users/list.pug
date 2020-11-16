@@ -1,0 +1,35 @@
+extends ../layouts/layout.pug
+
+block content
+    div(class="col-sm-12 row")
+        div(class="col-sm-9")
+            if msg !== undefined
+                div(class="alert alert-primary" role="alert") #{msg}
+            if err !== undefined
+                each item in err
+                    div(class="alert alert-danger" role="alert") #{item.message}
+        div(class="col-sm-3")
+            ul(class="nav nav-pills")
+                li(class="nav-item")
+                    a(class="nav-link active" href="/api/users/add") Add new
+    div(class="col-sm-12 row")
+        table(class="table table-hover")
+            thead
+                tr
+                    th(scope="col") Fullname
+                    th(scope="col") Email
+                    th(scope="col") Phone
+                    th(scope="col") Address
+                    th(scope="col") Action
+            tbody
+                each user in users
+                    tr
+                        td= user.fullname
+                        td= user.email
+                        td= user.phone
+                        td= user.address
+                        td 
+                            a.d-inline(href=`/api/users/edit/${user._id}`) Edit
+                            form.d-inline(action=`/api/users/${user._id}` method="post")
+                                input(type='hidden', value='DELETE', name='_method')
+                                button(type="submit" class="btn btn-link") Delete

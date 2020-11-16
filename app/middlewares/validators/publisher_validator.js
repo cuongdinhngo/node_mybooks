@@ -1,7 +1,6 @@
-const {Publisher, beautyErrors} = require('../../models/Publisher');
+const {Publisher} = require('../../models/Publisher');
 const pug = require('pug');
 const helpers = require('../../libs/Helpers');
-
 const categories = helpers.loadJsonData('books.categories');
 
 exports.validate = async (req, res, next) => {
@@ -13,7 +12,7 @@ exports.validate = async (req, res, next) => {
     });
     let error = publisher.validateSync();
     if (error) {
-        let templatePath = "views/admin/publishers/add.pug";
+        let templatePath = req.originalUrl.indexOf('add') !== -1 ? "views/admin/publishers/add.pug" : "views/admin/publishers/edit.pug";
         res.send(pug.renderFile(templatePath, {categories , publisher: req.body, err: error.errors}));
         return;
     }
