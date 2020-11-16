@@ -4,7 +4,6 @@ const PORT = process.env.PORT;
 
 require('./startup/middlewares.js')(app);
 require('./startup/db.js')();
-
-app.use('/api/publishers', require('./routes/publishers'));
+require('./startup/routes.js')(app);
 
 app.listen(PORT, () => console.log(`LISTING ${PORT} ...`));
