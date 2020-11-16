@@ -26,7 +26,7 @@ block content
                     input(type="file" class="form-control-plaintext" id="icon" name="icon")
             div(class="form-group row")
                 label(for="categories" class="col-sm-2 col-form-label") Categories:
-                div(class="col-sm-10 row")
+                div(class="col-sm-10 row" id="publisherCategories")
                     each item in categories
                         div(class="col-sm-3")
                             div(class="form-check")
@@ -51,3 +51,4 @@ block content
                     if err !== undefined
                         each key in err
                             div(class="alert alert-danger" role="alert") #{key.message}
+
